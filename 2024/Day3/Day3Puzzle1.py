@@ -4,6 +4,8 @@ with open('Day3Input.txt') as file:
 
 result = 0
 instruction = ""
+ended = False
+can_add_instruction = False
 
 
 def can_add_numeric(character, instruction):
@@ -16,49 +18,65 @@ def can_add_numeric(character, instruction):
         return False
 
 
-
 def add_character_to_list(character, instruction):
 
     if character == "m":
-        return character
+        return character, False
         
     
     if character == "u" and len(instruction) == 1:
-        return character
+        return character, False
         
 
     if character == "l" and len(instruction) == 2:
-        return character
+        return character, False
         
 
     if character == "(" and len(instruction) == 3:
-        return character   
+        return character, False
     
 
     if can_add_numeric(character, instruction):
-        return character
+        return character, False
     
     
     if character == "," and "mul(" in instruction and instruction[4].isnumeric():
-        return character
+        return character, False
     
     
     if character == ")" and "," in instruction and instruction[instruction.index(",")+1].isnumeric():
-        return character
-
-
-
+        return character, True
+    
+    return "", False
+    
 
 
 for index, character in enumerate(input):
 
-    new_character = add_character_to_list(character, instruction)
+    new_character = add_character_to_list(character, instruction)[0]
+    ended = add_character_to_list(character, instruction)[1]
 
-    if new_character is not None:
+
+    if new_character != "":
         instruction += new_character
+        
+        if ended:
+            filtered_instruction = ""
+            numbers = []
+
+            for char in instruction:
+                if char.isnumeric() or char == ",":
+                    filtered_instruction += char
+            
+            numbers = filtered_instruction.split(",")
+            result += int(numbers[0]) * int(numbers[1])
+
+            print(instruction)
+            instruction = ""
+            
     else:
-        print(0)
         instruction = ""
 
+print(result)
     
  
